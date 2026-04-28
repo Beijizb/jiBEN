@@ -20,22 +20,28 @@ jobs:
 
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v4
-        with:
-          generate-job-summary: false
 
       - name: Generate Gradle Wrapper
         run: gradle wrapper --gradle-version 8.4
 
+      - name: Install Android SDK components
+        run: |
+          $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --licenses < /dev/null
+          $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager \
+            "platforms;android-34" "build-tools;34.0.0"
+
       - name: Download Xposed API
         run: |
           mkdir -p app/libs
-          curl -L -o app/libs/api-82-sources.jar \
+          curl -fsSL -o app/libs/api-82-sources.jar \
             https://api.xposed.info/repo/de/robv/android/xposed/api/82/api-82-sources.jar
+          ls -la app/libs/
 
       - name: Build APK
-        run: ./gradlew assembleRelease --no-daemon
+        run: ./gradlew assembleRelease --no-daemon --stacktrace
 
       - name: Upload APK
+        if: success()
         uses: actions/upload-artifact@v4
         with:
           name: SollinPlayer-Bypass-Xposed
