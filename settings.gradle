@@ -6,11 +6,4 @@ pluginManagement {
     }
 }
 
-dependencyResolution {
-    repositories {
-        google()
-        mavenCentral()
-    }
-}
-
 include ':app'
